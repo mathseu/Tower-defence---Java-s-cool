@@ -1,0 +1,133 @@
+
+// ce programme propose en plus de la fonction tourelle et deplacementEnnemis :
+//-placement de la tourelle au clic
+//-initialisation dans un void pour pouvoir rÃ©initialiser
+//-ajout d'une zone apparente autour le la tourelle(dans un void)
+//-chemin apparent pour pouvoir placer la tourelle
+//-mini explosion
+//PS: NE PAS RECLIQUER AVANT QUE LENNEMI SOIT MORT.
+
+
+ int xc,yc,n,v,vie;
+ 
+// description des variables :
+//-xc et yc : position de la tourelle.
+//-n et v : position de l'ennemi.
+//-vie: nombre de vies de l'ennemis et ennemitouche : si l'ennemi n'a plus de vies alors valeur boolÃ©enne vraie.
+
+boolean ennemitouche;
+
+String zone;
+
+void initialisation() {
+   reset(40, 40, false);
+   n =0;
+   v =0;
+   ennemitouche = false;
+   vie =6;
+   zone = "cyan";
+   for (int uf =0; uf <40; uf ++) {
+      setPixel(uf, 20, "gray");
+   }
+}
+
+void zone() {
+   for (int uz = xc -4; uz < xc +5; uz ++) {
+      for (int vz = yc -4; vz < yc +5; vz ++) {
+         setPixel(uz, vz, zone);
+      }
+   }
+   if (yc <25 && yc >15) {
+      for (int uf = xc -4; uf < xc +5; uf ++) {
+         setPixel(uf, 20, "black");
+      }
+   }
+}
+//CREATION DE LA TOURRELLE ET DU TIR
+void tourrelle(int xt, int yt) {
+   setPixel(xc, yc, "red");
+   // dans ce if on met en place la portÃ©e de la tourelle facilement modifiable (modifier le "-5" et "+5"),condition pour quelle
+   // tire sur l'ennemi avec n et v la position de l'ennemi et xt yt la position de la tourrellle
+   if (n > xt -5 && n < xt +5 && v > yt -5 && v < yt +5) {
+   	//tant que xt et yt qui representent le tir ne sont pas egaux Ã  la position de l'ennemi le tir continu d'avancer vers ce dernier
+      while (xt != n || yt != v) {
+      	// Dans ces if ont attribu a xt et yt differentes valeurs pour que le tir avance vers l'ennemi
+         if (xt < n) {
+            xt = xt +1;
+         }
+         if (xt > n) {
+            xt = xt -1;
+         }
+         if (yt < v) {
+            yt = yt +1;
+         }
+         if (yt > v) {
+            yt = yt -1;
+         }
+         // le tir s'Ã©tant rapprochÃ© de l'ennemi, on l'affiche et ont recommence la boucle tant qu'il ne l'a pas atteint
+         setPixel(xt, yt, "red");
+         sleep(40);
+         setPixel(xt, yt, zone);
+      }
+      // quand il l'a atteint on enlÃ¨ve un vie Ã  l'ennemi j'usqu'Ã  qu'il disparaisse (cf ->  deplacementEnnemis)
+      if (xt == n && yt == v) {
+         vie = vie-1;
+      }
+   }
+}
+//Deplacement de l'ennemi
+void deplacementEnnemis(int j) {
+   //Pour l'instant on demande dans la fonction du deplacement de l'ennemi que sa position selon Y car il effectue un 
+   //mouvement selement horizontal pour le moment il faudrat donc par la suite definir sont deplacement selon x et y car
+   //les ennemis effecturont un chemin plus compliquÃ© dans les maps finales.
+   v = j;
+   //deplacement vertical de l'ennemi
+   for (n =0; n <41; n ++) {
+   	//pixel de l'ennemi
+      setPixel(n, j, "blue");
+     //on effectu la fonction tourelle qui vÃ©rifi si l'ennemi et dans le portÃ©e de la tourelle
+      tourrelle(xc, yc);
+     //si l'ennemi n'a plus de vie (cf-> tourelle(); )on sort de la boucle for ce qui fait disparaitre l'ennemie
+      if (vie == 0) {
+         explosion();
+         break;
+      }
+      sleep(100);
+      setPixel(n, v, "gray");
+   }
+}
+
+void clic() {
+   xc = getX();
+   yc = getY();
+   zone();
+   deplacementEnnemis(20);
+}
+
+void explosion() {
+   setPixel(n, v, "orange");
+   sleep(50);
+   setPixel(n, v, "white");
+   setPixel(n +1, v +1, "orange");
+   setPixel(n -1, v +1, "orange");
+   setPixel(n +1, v -1, "orange");
+   setPixel(n -1, v -1, "orange");
+   sleep(50);
+   setPixel(n +1, v +1, "white");
+   setPixel(n -1, v +1, "white");
+   setPixel(n +1, v -1, "white");
+   setPixel(n -1, v -1, "white");
+}
+
+//ATTENTION\\ les tirs ne peuvent etre effectuÃ©s que 1 par 1
+
+
+ void main() {
+   setRunnable(null);
+   initialisation();
+   setRunnable(new Runnable() {
+      public void run() {
+         clic(); initialisation();}
+   }
+  );
+}
