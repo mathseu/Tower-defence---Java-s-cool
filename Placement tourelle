@@ -1,0 +1,140 @@
+
+	
+	
+//attention ce programme n'est pas terminer et pas optimisÃ© (fonctions et boucles Ã  rajouter) de plus les commentaires n'expliques pas tout.
+	
+	
+	int x,y,i1,i2,i3,t1,t2,t3,g,sg,sgg;
+	boolean red,blue,green,p;
+    
+void noir(){	//fait apparaitre les contour des tourelles
+    setPixel(x+1,y,"black");
+    setPixel(x,y+1,"black");
+    setPixel(x-1,y,"black");
+    setPixel(x,y-1,"black");
+    setPixel(x+1,y+1,"black");
+    setPixel(x+1,y-1,"black");
+    setPixel(x-1,y+1,"black");
+    setPixel(x-1,y-1,"black");
+}
+
+void select(){		//fait apparaitre la sÃ©lection en couleur en bas en noir
+    setPixel(i1,23,"black");
+    setPixel(i2,23,"gray");
+    setPixel(i3,23,"gray");
+}
+	// si il n'y a pas assez d'argent
+void pauvre(){
+	setPixel(20,20,"red");
+	sleep(100);
+	setPixel(20,20,"gray");
+	sleep(100);
+	setPixel(20,20,"red");
+	sleep(100);
+	setPixel(20,20,"gray");
+}
+
+void gold(){	// fait apparaitre la barre de gold a dte
+    //g=nb de gold
+    //sg=nb de gold mais sur l'Ã©cran (inversÃ©)
+    //sgg= variable pour enregister sg et si g insuffisant, remettre l'ancien sg
+    //ug=variable pour afficher les gold
+    
+    sgg=sg;
+    sg=20-g;
+    if(sg<=20){
+        for(int w=19;w>=0;w--){
+            setPixel(20,w,"white");}
+        for(int ug=19;ug>=sg;ug--){
+            setPixel(20,ug,"orange");}}
+     else{sg=sgg;}
+}
+
+void clic(){		//fonction secondaire principale
+    x=getX();
+    y=getY();
+    
+   //sÃ©lection de couleur
+   //1 sÃ©lection du rouge
+    if(x==5 && y==22){   
+	    red=true;
+	    i1=5;
+	    i2=15;
+	    i3=10;
+	    select();
+	    blue = false;
+	    green = false;}
+	//2 sÃ©lection du bleu
+    if(x==10 && y==22){   
+	    blue=true;
+	    i1=10;
+	    i2=15;
+	    i3=5;
+	    select();
+	    red = false;
+	    green = false;}
+	//3 sÃ©lection du vert
+    if(x==15 && y==22){   
+	    green=true;
+	    i1=15;
+	    i2=10;
+	    i3=5;
+	    select();
+	    red = false;
+	    blue = false;}
+	//rechargement de gold
+    if(x==0 && y==24){
+         g=20;}
+
+	//clic dans la zone pour poser la tourelle
+    if(y<19 && x<19 && x>0 && y>0){
+	    if(red==true && g>=2){
+	        setPixel(x,y,"red");
+	        noir();
+	        g=g-t1;
+	        p=true;}
+	    
+	    if(blue==true && g>=4){
+	        setPixel(x,y,"blue");
+	        noir();
+	        g=g-t2;
+	        p=true;}
+	    
+	    if(green==true && g>=6){
+	        setPixel(x,y,"green");
+	        noir();  
+	        g=g-t3;
+	        p=true;}
+	    if(!p){pauvre();}
+	    }
+    p=false;
+    gold();
+   }
+
+void main(){
+	//initialisation
+    reset(21,25,false);
+    setRunnable(null);
+    red=false;
+    green=false;
+    blue=false;
+    t1=2;
+    t2=4;
+    t3=6;
+    g=15;
+    p=false;
+    for(int u=0;u<21;u++){
+    for(int v=20;v<25;v++){
+		setPixel(u,v,"gray");}}
+
+     setPixel(5,22,"red");
+	setPixel(10,22,"blue");
+	setPixel(15,22,"green");
+     setPixel(0,24,"orange");
+    gold();
+    //fin de l'initialisation
+    
+    setRunnable(new Runnable() {
+      public void run() {
+          clic();}});
+}
